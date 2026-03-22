@@ -95,6 +95,7 @@ def api_metrics():
 
 
 initialize_price_store()
+update_daily_gas_price()
 startup_payload = collect_metrics_payload()
 publish_metrics_payload(startup_payload)
 
