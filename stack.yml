@@ -1,0 +1,46 @@
+services:
+  tesla-savings-app:
+    image: ghcr.io/YOUR_GITHUB_USERNAME/tesla-savings-app:latest
+    container_name: tesla-savings-app
+    restart: unless-stopped
+    ports:
+      - "5080:5000"
+    environment:
+      APP_HOST: 0.0.0.0
+      APP_PORT: 5000
+      APP_SECRET_KEY: CHANGE_ME_TO_A_LONG_RANDOM_SECRET
+      TZ: America/Los_Angeles
+
+      TESLAMATE_DB_HOST: database
+      TESLAMATE_DB_PORT: 5432
+      TESLAMATE_DB_NAME: teslamate
+      TESLAMATE_DB_USER: teslamate
+      TESLAMATE_DB_PASSWORD: CHANGE_ME_DB_PASSWORD
+      TESLAMATE_DISTANCE_IN_KM: "true"
+
+      GAS_VEHICLE_MPG: 24
+      CURRENCY_SYMBOL: $
+      DISTANCE_UNIT: mi
+
+      HA_URL: http://192.168.11.10:8123
+      HA_TOKEN: CHANGE_ME_HOME_ASSISTANT_TOKEN
+      HA_GAS_PRICE_ENTITY: sensor.gasbuddy_regular
+
+      MQTT_HOST: 192.168.11.7
+      MQTT_PORT: 1883
+      MQTT_USERNAME: hass
+      MQTT_PASSWORD: CHANGE_ME_MQTT_PASSWORD
+      MQTT_BASE_TOPIC: tesla_savings
+
+    volumes:
+      - tesla-savings-data:/app/data
+
+    networks:
+      - teslamate_default
+
+volumes:
+  tesla-savings-data:
+
+networks:
+  teslamate_default:
+    external: true

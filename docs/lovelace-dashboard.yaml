@@ -1,0 +1,68 @@
+type: vertical-stack
+cards:
+  - type: markdown
+    content: |
+      ## Tesla Savings
+      EV savings versus a 24 MPG gas vehicle.
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: tile
+        entity: sensor.tesla_savings_all_time_savings
+        name: All-Time Savings
+        color: green
+      - type: tile
+        entity: sensor.tesla_savings_last_30_days_savings
+        name: Last 30 Days Savings
+        color: green
+      - type: tile
+        entity: sensor.tesla_savings_all_time_miles
+        name: All-Time Miles
+      - type: tile
+        entity: sensor.tesla_savings_last_30_days_miles
+        name: Last 30 Days Miles
+      - type: tile
+        entity: sensor.tesla_savings_all_time_ev_cost
+        name: All-Time EV Cost
+      - type: tile
+        entity: sensor.tesla_savings_last_30_days_ev_cost
+        name: Last 30 Days EV Cost
+      - type: tile
+        entity: sensor.tesla_savings_all_time_estimated_gas_cost
+        name: All-Time Gas Cost
+      - type: tile
+        entity: sensor.tesla_savings_last_30_days_estimated_gas_cost
+        name: Last 30 Days Gas Cost
+
+  - type: entities
+    title: Efficiency And Fuel Context
+    show_header_toggle: false
+    entities:
+      - entity: sensor.tesla_savings_all_time_efficiency
+        name: All-Time Efficiency
+      - entity: sensor.tesla_savings_last_30_days_efficiency
+        name: Last 30 Days Efficiency
+      - entity: sensor.tesla_savings_current_gas_price
+        name: Current Gas Price
+
+  - type: history-graph
+    title: Savings Trend
+    hours_to_show: 720
+    refresh_interval: 300
+    entities:
+      - entity: sensor.tesla_savings_all_time_savings
+        name: All-Time Savings
+      - entity: sensor.tesla_savings_last_30_days_savings
+        name: Last 30 Days Savings
+
+  - type: history-graph
+    title: Fuel Price And Efficiency
+    hours_to_show: 720
+    refresh_interval: 300
+    entities:
+      - entity: sensor.tesla_savings_current_gas_price
+        name: Gas Price
+      - entity: sensor.tesla_savings_last_30_days_efficiency
+        name: 30-Day Efficiency

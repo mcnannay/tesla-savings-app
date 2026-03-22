@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ app_title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <main class="wrap">
+    <h1>{{ app_title }}</h1>
+    <p class="subhead">
+      Compares your TeslaMate driving and charging data against a 24 MPG gas vehicle using
+      the built-in Washington historical fuel prices and your Home Assistant GasBuddy sensor
+      for current daily updates.
+    </p>
+
+    {% if app_status != "ok" %}
+    <section class="status-banner">
+      <h2>Data Source Status</h2>
+      {% if not source_status.teslamate.ok %}
+      <p>TeslaMate data is unavailable right now: {{ source_status.teslamate.error }}</p>
+      {% endif %}
+      {% if not source_status.pricing.ok %}
+      <p>Local fuel price storage is unavailable right now: {{ source_status.pricing.error }}</p>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    <section>
+      <h2>All Time</h2>
+      <div class="grid">
+        <div class="card"><div class="label">Miles</div><div class="value">{{ all_time.miles_driven }} {{ distance_unit }}</div></div>
+        <div class="card"><div class="label">EV Cost</div><div class="value">{{ currency_symbol }}{{ all_time.ev_cost }}</div></div>
+        <div class="card"><div class="label">Estimated Gas Cost</div><div class="value">{{ currency_symbol }}{{ all_time.estimated_gas_cost }}</div></div>
+        <div class="card"><div class="label">Savings</div><div class="value">{{ currency_symbol }}{{ all_time.savings }}</div></div>
+        <div class="card"><div class="label">Energy Added</div><div class="value">{{ all_time.energy_added_kwh }} kWh</div></div>
+        <div class="card"><div class="label">Efficiency (Charging-Based)</div><div class="value">{{ all_time.mi_per_kwh }} mi/kWh</div></div>
+      </div>
+      {% if all_time.drive_energy_available %}
+      <p class="metric-note">Direct drive energy source: {{ all_time.drive_energy_source }} ({{ all_time.drive_energy_used_kwh }} kWh)</p>
+      {% else %}
+      <p class="metric-note">{{ all_time.drive_energy_note }}</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>Last 30 Days</h2>
+      <div class="grid">
+        <div class="card"><div class="label">Miles</div><div class="value">{{ last_30.miles_driven }} {{ distance_unit }}</div></div>
+        <div class="card"><div class="label">EV Cost</div><div class="value">{{ currency_symbol }}{{ last_30.ev_cost }}</div></div>
+        <div class="card"><div class="label">Estimated Gas Cost</div><div class="value">{{ currency_symbol }}{{ last_30.estimated_gas_cost }}</div></div>
+        <div class="card"><div class="label">Savings</div><div class="value">{{ currency_symbol }}{{ last_30.savings }}</div></div>
+        <div class="card"><div class="label">Energy Added</div><div class="value">{{ last_30.energy_added_kwh }} kWh</div></div>
+        <div class="card"><div class="label">Efficiency (Charging-Based)</div><div class="value">{{ last_30.mi_per_kwh }} mi/kWh</div></div>
+      </div>
+      {% if last_30.drive_energy_available %}
+      <p class="metric-note">Direct drive energy source: {{ last_30.drive_energy_source }} ({{ last_30.drive_energy_used_kwh }} kWh)</p>
+      {% else %}
+      <p class="metric-note">{{ last_30.drive_energy_note }}</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>Current Price Context</h2>
+      <div class="grid">
+        <div class="card"><div class="label">Current Gas Price</div><div class="value">${{ all_time.current_gas_price }}/gal</div></div>
+        <div class="card"><div class="label">Comparison Vehicle</div><div class="value">{{ all_time.gas_vehicle_mpg }} MPG</div></div>
+        <div class="card"><div class="label">All-Time Cost per Mile</div><div class="value">{{ currency_symbol }}{{ all_time.cost_per_mile }}</div></div>
+        <div class="card"><div class="label">Price Coverage</div><div class="value">{{ all_time.price_coverage_start }} → {{ all_time.price_coverage_end }}</div></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
