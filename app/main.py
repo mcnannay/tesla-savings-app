@@ -26,9 +26,7 @@ def update_daily_gas_price() -> None:
         app_db.close()
 
 
-def refresh_and_publish_metrics() -> None:
-    update_daily_gas_price()
-    payload = collect_metrics_payload()
+def publish_metrics_payload(payload: dict) -> None:
     if payload['status'] != 'ok':
         return
 
@@ -42,10 +40,31 @@ def refresh_and_publish_metrics() -> None:
     publish_metric('all_time_ev_cost', all_time['ev_cost'], unit=Config.CURRENCY_SYMBOL)
     publish_metric('last_30_days_ev_cost', last_30['ev_cost'], unit=Config.CURRENCY_SYMBOL)
     publish_metric('current_gas_price', all_time['current_gas_price'], unit='$/gal')
+    publish_metric('current_gas_price_source', all_time['current_gas_price_source'], state_class=None)
+    publish_metric('current_gas_price_effective_date', all_time['current_gas_price_effective_date'], state_class=None)
+    publish_metric(
+        'current_gas_price_fetched_at',
+        all_time['current_gas_price_fetched_at'],
+        state_class=None,
+        device_class='timestamp',
+    )
+    publish_metric('last_local_gas_price', all_time['last_local_gas_price'], unit='$/gal')
+    publish_metric('last_local_gas_price_date', all_time['last_local_gas_price_date'], state_class=None)
+    publish_metric(
+        'last_local_gas_price_fetched_at',
+        all_time['last_local_gas_price_fetched_at'],
+        state_class=None,
+        device_class='timestamp',
+    )
     publish_metric('all_time_estimated_gas_cost', all_time['estimated_gas_cost'], unit=Config.CURRENCY_SYMBOL)
     publish_metric('last_30_days_estimated_gas_cost', last_30['estimated_gas_cost'], unit=Config.CURRENCY_SYMBOL)
     publish_metric('all_time_efficiency', all_time['mi_per_kwh'], unit='mi/kWh')
     publish_metric('last_30_days_efficiency', last_30['mi_per_kwh'], unit='mi/kWh')
+
+
+def refresh_and_publish_metrics() -> None:
+    update_daily_gas_price()
+    publish_metrics_payload(collect_metrics_payload())
 
 
 @app.route('/')
@@ -76,6 +95,8 @@ def api_metrics():
 
 
 initialize_price_store()
+startup_payload = collect_metrics_payload()
+publish_metrics_payload(startup_payload)
 
 scheduler = BackgroundScheduler(timezone=Config.TZ)
 scheduler.add_job(

@@ -65,6 +65,11 @@
       <h2>Current Price Context</h2>
       <div class="grid">
         <div class="card"><div class="label">Current Gas Price</div><div class="value">${{ all_time.current_gas_price }}/gal</div></div>
+        <div class="card"><div class="label">Price Source</div><div class="value">{{ all_time.current_gas_price_source or 'unavailable' }}</div></div>
+        <div class="card"><div class="label">Effective Date</div><div class="value">{{ all_time.current_gas_price_effective_date or 'unavailable' }}</div></div>
+        <div class="card"><div class="label">Last GasBuddy Fetch</div><div class="value">{{ all_time.last_local_gas_price_fetched_at or 'never' }}</div></div>
+        <div class="card"><div class="label">Last GasBuddy Price Date</div><div class="value">{{ all_time.last_local_gas_price_date or 'never' }}</div></div>
+        <div class="card"><div class="label">Last GasBuddy Price</div><div class="value">{% if all_time.last_local_gas_price is not none %}${{ all_time.last_local_gas_price }}/gal{% else %}unavailable{% endif %}</div></div>
         <div class="card"><div class="label">Comparison Vehicle</div><div class="value">{{ all_time.gas_vehicle_mpg }} MPG</div></div>
         <div class="card"><div class="label">All-Time Cost per Mile</div><div class="value">{{ currency_symbol }}{{ all_time.cost_per_mile }}</div></div>
         <div class="card"><div class="label">Price Coverage</div><div class="value">{{ all_time.price_coverage_start }} → {{ all_time.price_coverage_end }}</div></div>

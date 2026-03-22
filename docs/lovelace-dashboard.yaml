@@ -46,6 +46,16 @@ cards:
         name: Last 30 Days Efficiency
       - entity: sensor.tesla_savings_current_gas_price
         name: Current Gas Price
+      - entity: sensor.tesla_savings_current_gas_price_source
+        name: Current Gas Price Source
+      - entity: sensor.tesla_savings_current_gas_price_effective_date
+        name: Current Gas Price Effective Date
+      - entity: sensor.tesla_savings_last_local_gas_price
+        name: Last GasBuddy Price
+      - entity: sensor.tesla_savings_last_local_gas_price_date
+        name: Last GasBuddy Price Date
+      - entity: sensor.tesla_savings_last_local_gas_price_fetched_at
+        name: Last GasBuddy Fetch Time
 
   - type: history-graph
     title: Savings Trend
@@ -66,3 +76,5 @@ cards:
         name: Gas Price
       - entity: sensor.tesla_savings_last_30_days_efficiency
         name: 30-Day Efficiency
+      - entity: sensor.tesla_savings_last_local_gas_price
+        name: Last GasBuddy Price
