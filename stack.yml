@@ -31,6 +31,7 @@ services:
       MQTT_USERNAME: hass
       MQTT_PASSWORD: CHANGE_ME_MQTT_PASSWORD
       MQTT_BASE_TOPIC: tesla_savings
+      MQTT_DISCOVERY_PREFIX: homeassistant
 
     volumes:
       - tesla-savings-data:/app/data

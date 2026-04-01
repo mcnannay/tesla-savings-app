@@ -34,6 +34,7 @@ class Config:
     MQTT_USERNAME = os.getenv("MQTT_USERNAME", "")
     MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
     MQTT_BASE_TOPIC = os.getenv("MQTT_BASE_TOPIC", "tesla_savings")
+    MQTT_DISCOVERY_PREFIX = os.getenv("MQTT_DISCOVERY_PREFIX", "homeassistant")
 
     DATA_DIR = Path(os.getenv("APP_DATA_DIR", "/app/data"))
     SQLITE_PATH = DATA_DIR / "tesla_savings.sqlite3"

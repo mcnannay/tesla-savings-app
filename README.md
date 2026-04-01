@@ -142,6 +142,7 @@ One important limitation is that this TeslaMate schema does **not** expose direc
 - `MQTT_USERNAME`
 - `MQTT_PASSWORD`
 - `MQTT_BASE_TOPIC`
+- `MQTT_DISCOVERY_PREFIX` - default `homeassistant`
 
 ### Scheduler
 
@@ -168,8 +169,8 @@ This repo is already shaped around your environment:
 
 - TeslaMate stack/project name: `teslamate`
 - TeslaMate DB service name on the Docker network: `database`
-- Home Assistant URL: `http://192.168.11.10:8123`
-- MQTT broker: `192.168.11.7:1883`
+- Home Assistant URL: `http://REPLACE WITH homeassistant_IPADDRESS:8123`
+- MQTT broker: `REPLACE WITH BROKER IP`
 - app HTTP port mapping: `5080:5000`
 
 ### Before deploying
@@ -178,11 +179,9 @@ Update [stack.yml](./stack.yml) and replace:
 
 - `YOUR_GITHUB_USERNAME`
 - `APP_SECRET_KEY`
-- `TESLAMATE_DB_PASSWORD`
 - `HA_TOKEN`
-- `MQTT_PASSWORD`
 
-For a cleaner setup, copy values from `.env.example` into your own private notes or secret store and paste them into Portainer during deployment. Do not commit real secrets to the repo.
+You should also change any credentials in the stack if you rotate them later.
 
 ### Network requirement
 
@@ -207,7 +206,7 @@ That should be correct for a Portainer stack named `teslamate`. If your real Doc
 5. Deploy the stack.
 6. Open the app at `http://<your-docker-host>:5080/`.
 7. Check `http://<your-docker-host>:5080/api/health`.
-8. Wait for MQTT discovery entities to appear in Home Assistant.
+8. Home Assistant should create the MQTT entities within a few seconds after the retained discovery messages land on the broker.
 
 ## Web UI and API
 
@@ -234,6 +233,26 @@ The app publishes MQTT discovery topics for sensors such as:
 - `sensor.tesla_savings_last_30_days_efficiency`
 
 The code uses `default_entity_id`, not deprecated `object_id`.
+
+Discovery configs are published immediately at startup and retained on the broker, even if TeslaMate is temporarily degraded. Metric state updates are published once the app can build a healthy metrics payload.
+
+### MQTT discovery troubleshooting
+
+If the entities do not appear in Home Assistant, check these items first:
+
+- The Home Assistant MQTT integration has discovery enabled.
+- Home Assistant's MQTT discovery prefix matches `MQTT_DISCOVERY_PREFIX`.
+- The broker is receiving retained config topics under `homeassistant/sensor/tesla_savings_<metric>/config` or your custom discovery prefix.
+- The app can connect to TeslaMate well enough to produce `/api/health` and `/api/metrics` responses.
+- `HA_GAS_PRICE_ENTITY` exists if you configured it. A missing or unreachable Home Assistant entity no longer crashes the app, but it will stop daily local gas price snapshots.
+
+Useful broker-side tests:
+
+- Watch discovery traffic: `mosquitto_sub -h <broker> -u <user> -P <pass> -v -t 'homeassistant/#'`
+- Watch app state topics: `mosquitto_sub -h <broker> -u <user> -P <pass> -v -t 'tesla_savings/#'`
+- Check retained discovery payloads: `mosquitto_sub -h <broker> -u <user> -P <pass> -v -R -t 'homeassistant/#'`
+- Confirm the app health endpoint: `curl http://<your-docker-host>:5080/api/health`
+- Confirm the metrics payload: `curl http://<your-docker-host>:5080/api/metrics`
 
 ### Recommended dashboard choice
 
@@ -310,7 +329,7 @@ docker build -t tesla-savings-app:local .
 
 ## Next recommended improvements
 
-1. switch the stack to env substitution for secrets
+1. add a `.env.example` and switch the stack to env substitution for secrets
 2. add chart views for monthly savings and gas price history
 3. add CSV export
 4. add a settings page stored in the app DB
